@@ -1,0 +1,195 @@
+﻿Nama : Nacha Arya Arta
+Nim : 825260086
+
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+// Struktur untuk merepresentasikan data mahasiswa
+typedef struct {
+    char nama[50];
+    char nim[20];
+    float ipk;
+} Mahasiswa;
+
+
+// Fungsi untuk membersihkan buffer input
+void clearBuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+
+// 1. Membuat dan menulis file awal
+void tulisFileBaru() {
+    FILE *file = fopen("mahasiswa.txt", "w");
+    if (file == NULL) {
+        printf("Gagal membuka file!\n");
+        return;
+    }
+
+
+    Mahasiswa mhs;
+    printf("\n--- Input Data Mahasiswa Awal ---\n");
+    printf("Nama : ");
+    fgets(mhs.nama, sizeof(mhs.nama), stdin);
+    mhs.nama[strcspn(mhs.nama, "\n")] = 0; // Hapus newline
+
+
+    printf("NIM  : ");
+    fgets(mhs.nim, sizeof(mhs.nim), stdin);
+    mhs.nim[strcspn(mhs.nim, "\n")] = 0;
+
+
+    printf("IPK  : ");
+    scanf("%f", &mhs.ipk);
+    clearBuffer();
+
+
+    // Menulis ke file dengan format sesuai spesifikasi
+    fprintf(file, "Nama: %s\n", mhs.nama);
+    fprintf(file, "NIM : %s\n", mhs.nim);
+    fprintf(file, "IPK : %.2f\n", mhs.ipk);
+    fprintf(file, "--------------------\n");
+
+
+    fclose(file);
+    printf("Data awal berhasil ditulis ke 'mahasiswa.txt'!\n");
+}
+
+
+// 2. Menampilkan isi file
+void tampilkanFile() {
+    FILE *file = fopen("mahasiswa.txt", "r");
+    if (file == NULL) {
+        printf("\nFile 'mahasiswa.txt' belum ada atau kosong.\n");
+        return;
+    }
+
+
+    printf("\n=== ISI DATA MAHASISWA ===\n");
+    char buffer[256];
+    while (fgets(buffer, sizeof(buffer), file) != NULL) {
+        printf("%s", buffer);
+    }
+
+
+    fclose(file);
+}
+
+
+// 3. Menambah data baru (Append Mode)
+void tambahData() {
+    FILE *file = fopen("mahasiswa.txt", "a");
+    if (file == NULL) {
+        printf("Gagal membuka file!\n");
+        return;
+    }
+
+
+    Mahasiswa mhs;
+    printf("\n--- Tambah Data Mahasiswa Baru ---\n");
+    printf("Nama : ");
+    fgets(mhs.nama, sizeof(mhs.nama), stdin);
+    mhs.nama[strcspn(mhs.nama, "\n")] = 0;
+
+
+    printf("NIM  : ");
+    fgets(mhs.nim, sizeof(mhs.nim), stdin);
+    mhs.nim[strcspn(mhs.nim, "\n")] = 0;
+
+
+    printf("IPK  : ");
+    scanf("%f", &mhs.ipk);
+    clearBuffer();
+
+
+    // Menambahkan data di akhir file
+    fprintf(file, "Nama: %s\n", mhs.nama);
+    fprintf(file, "NIM : %s\n", mhs.nim);
+    fprintf(file, "IPK : %.2f\n", mhs.ipk);
+    fprintf(file, "--------------------\n");
+
+
+    fclose(file);
+    printf("Data baru berhasil ditambahkan!\n");
+}
+
+
+// 4. Menghitung Jumlah Mahasiswa
+void hitungMahasiswa() {
+    FILE *file = fopen("mahasiswa.txt", "r");
+    if (file == NULL) {
+        printf("\nJumlah mahasiswa: 0 (File belum ada)\n");
+        return;
+    }
+
+
+    char buffer[256];
+    int jumlah = 0;
+
+
+    // Setiap satu mahasiswa ditandai dengan baris garis pemisah "--------------------"
+    // atau kita bisa menghitung berdasarkan kemunculan kata "Nama:"
+    while (fgets(buffer, sizeof(buffer), file) != NULL) {
+        if (strncmp(buffer, "Nama:", 5) == 0) {
+            jumlah++;
+        }
+    }
+
+
+    fclose(file);
+    printf("\nTotal jumlah mahasiswa dalam file: %d orang\n", jumlah);
+}
+
+
+// Menu Utama
+int main() {
+    int pilihan;
+    do {
+        printf("\n==================================\n");
+        printf("   PROGRAM PENGELOLAAN MAHASISWA   \n");
+        printf("==================================\n");
+        printf("1. Membuat dan Menulis File Awal\n");
+        printf("2. Menampilkan Isi File\n");
+        printf("3. Menambah Data Baru (Append Mode)\n");
+        printf("4. Menghitung Jumlah Mahasiswa\n");
+        printf("5. Keluar\n");
+        printf("Pilihan Anda (1-5): ");
+        
+        if (scanf("%d", &pilihan) != 1) {
+            printf("Input tidak valid!\n");
+            clearBuffer();
+            continue;
+        }
+        clearBuffer();
+
+
+        switch (pilihan) {
+            case 1:
+                tulisFileBaru();
+                break;
+            case 2:
+                tampilkanFile();
+                break;
+            case 3:
+                tambahData();
+                break;
+            case 4:
+                hitungMahasiswa();
+                break;
+            case 5:
+                printf("Terima kasih telah menggunakan program ini!\n");
+                break;
+            default:
+                printf("Pilihan tidak valid. Silakan coba lagi.\n");
+        }
+    } while (pilihan != 5);
+
+
+    return 0;
+}
